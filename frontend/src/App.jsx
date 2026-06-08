@@ -542,8 +542,10 @@ export default function App() {
         })
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Something went wrong");
+      // FIXED — handles empty responses safely
+      const text = await res.text();  // read as plain text first
+      const data = text ? JSON.parse(text) : {};  // only parse if not empty
+      if (!res.ok) throw new Error(data.error || `Server error: ${res.status}`);
 
       setMessages(prev => [
         ...prev,
